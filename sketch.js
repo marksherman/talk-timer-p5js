@@ -4,6 +4,8 @@ let startSeconds = 0;
 let viewer;
 let resetButton;
 let startButton;
+let startTimeInput;
+let alertTimeInput;
 
 let startTime = 0;
 let timerRunning = false;
@@ -33,13 +35,21 @@ function setup() {
   viewer.style('padding-bottom', '5%');
   setNormalColor();
 
+  startButton = createButton('Start');
+  startButton.style('margin','10px');
+  startButton.mouseClicked(startButtonPressed);
+
   resetButton = createButton('Reset');
   resetButton.style('margin', '10px');
   resetButton.mouseClicked(resetTimer);
 
-  startButton = createButton('Start');
-  startButton.style('margin','10px');
-  startButton.mouseClicked(startButtonPressed);
+  createSpan('  Start at ');
+
+  startTimeInput = new TimeInput(startButton.parent(), startMinutes, startSeconds);
+
+  createSpan('  Alert sound at ');
+
+  alertTimeInput = new TimeInput(startButton.parent(), 0, 30);
 
   resetTimer();
 }
@@ -47,24 +57,22 @@ function setup() {
 function draw() {
   viewer.html(nf(timerMinutes, 1, 0).concat(':', nf(timerSeconds, 2, 0)));
   
-  if (timerMinutes < 1 && timerSeconds < 30) {
+  if (timerMinutes <= alertTimeInput.minutes() && timerSeconds <= alertTimeInput.seconds()) {
     setCriticalColor();
   } else {
     setNormalColor();
   }
 
-  if (timerMinutes < 1 && timerSeconds < 30 && hasAlertSounded === false) {
+  if (timerMinutes <= alertTimeInput.minutes() && timerSeconds <= alertTimeInput.seconds() && hasAlertSounded === false) {
     alertSound.play();
     hasAlertSounded = true;
-    print('sound alert');
   }
 }
 
 function resetTimer() {
-  print('reset');
   stopTimer();
-  timerMinutes = startMinutes;
-  timerSeconds = startSeconds;
+  timerMinutes = startTimeInput.minutes();
+  timerSeconds = startTimeInput.seconds();
   hasAlertSounded = false;
 }
 
@@ -78,7 +86,6 @@ function startButtonPressed() {
 
 function startTimer() {
   if (!timerRunning) {
-    print('start');
     startButton.html('Stop');
     timerRunning = true;
     windowTimer = window.setInterval(update, 1000);
@@ -87,7 +94,6 @@ function startTimer() {
 
 function stopTimer() {
   if (timerRunning) {
-    print('stop');
     window.clearInterval(windowTimer);
     startButton.html('Start');
     timerRunning = false;
