@@ -35,21 +35,31 @@ function setup() {
   viewer.style('padding-bottom', '5%');
   setNormalColor();
 
+  let bar = createDiv();
+
   startButton = createButton('Start');
+  startButton.parent(bar);
   startButton.style('margin','10px');
   startButton.mouseClicked(startButtonPressed);
 
   resetButton = createButton('Reset');
+  resetButton.parent(bar);
   resetButton.style('margin', '10px');
   resetButton.mouseClicked(resetTimer);
 
-  createSpan('  Start at ');
+  createSpan('  Start at ').parent(bar);
 
-  startTimeInput = new TimeInput(startButton.parent(), startMinutes, startSeconds);
+  startTimeInput = new TimeInput(bar, startMinutes, startSeconds);
 
-  createSpan('  Alert sound at ');
+  createSpan('  Alert sound at ').parent(bar);
 
-  alertTimeInput = new TimeInput(startButton.parent(), 0, 30);
+  alertTimeInput = new TimeInput(bar, 0, 30);
+
+  let sourceNote = createSpan();
+  sourceNote.parent(bar);
+  sourceNote.style('float', 'right');
+  sourceNote.style('margin', '10px');
+  createA('https://github.com/marksherman/talk-timer-p5js', 'source', '_blank').parent(sourceNote);
 
   resetTimer();
 }
